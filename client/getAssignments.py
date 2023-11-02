@@ -47,8 +47,6 @@ def getAssignments():
                     print(item['title'])
                     print(item['id'])
 
-
-                exit(0)
     except HttpError as error:
         print(error)
         exit(1)
