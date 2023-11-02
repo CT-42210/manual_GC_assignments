@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import os.path
+import json
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -10,7 +11,6 @@ from googleapiclient.errors import HttpError
 
 with (open('server_scopes', 'r') as scopes):
     SCOPES = scopes.read().splitlines()
-    print(SCOPES)
 
 
 def jsonPushFormat(title, description, dueDate, student_email):
@@ -19,15 +19,15 @@ def jsonPushFormat(title, description, dueDate, student_email):
         'description': description,
         'state': 'PUBLISHED',
         'dueDate': {
-            'year': dueDate[0][0],
-            'month': dueDate[0][1],
-            'day': dueDate[0][2],
+            'year': dueDate[0],
+            'month': dueDate[1],
+            'day': dueDate[2],
         },
         'dueTime': {
-            'hours': dueDate[1][0],
-            'minutes': dueDate[1][1],
-            'seconds': dueDate[1][2],
-            'nanos': dueDate[1][3],
+            'hours': 23,
+            'minutes': 59,
+            'seconds': 59,
+            'nanos': 0
         },
         'assigneeMode': 'INDIVIDUAL_STUDENTS',
         'individualStudentsOptions': {
@@ -39,9 +39,10 @@ def jsonPushFormat(title, description, dueDate, student_email):
     return assignment
 
 
-def createAssignment(service, course_id, title, description, dueDate, student_email):
+def createAssignment(service, course_id, data):
     try:
-        assignment = jsonPushFormat(title, description, dueDate, student_email)
+        # assignment = jsonPushFormat(title, description, dueDate, student_email)
+        assignment = json.loads(data)
         print(assignment)
         created_assignment = service.courses().courseWork().create(
             courseId=course_id, body=assignment).execute()
@@ -53,7 +54,7 @@ def createAssignment(service, course_id, title, description, dueDate, student_em
         print('An error occurred: %s' % error)
 
 
-def main(create_boolean):
+def main(data):
     """Shows basic usage of the Classroom API.
     Prints the names of the first 10 courses the user has access to.
     """
@@ -92,12 +93,4 @@ def main(create_boolean):
     except HttpError as error:
         print('An error occurred: %s' % error)
 
-    dueDate = [[2023, 12, 31], [23, 59, 59, 0]]
-    if create_boolean:
-        createAssignment(service, '629265502936', title='me when the voices',
-                         description='test oh yea buddy',
-                         dueDate=dueDate, student_email='bruhyamer21@gmail.com')
-
-
-if __name__ == '__main__':
-    main(True)
+    createAssignment(service, '629265502936', data)

@@ -13,6 +13,30 @@ function printBoth(str) {
     myConsole.log("main.js:    " + str);
 }
 
+function pushJSON(data) {
+    const url = 'https://manual-gc-assignments.ngrok.dev';
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Set the content type to JSON
+      },
+      body: JSON.stringify(data), // Convert the data to JSON format
+    };
+
+    // Send the POST request
+    fetch(url, requestOptions)
+      .then(response => response.json()) // Parse the response as JSON
+      .then(data => {
+        console.log('Response data:', data);
+        // Handle the response data here
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle errors here
+      });
+}
+
 function createWindow() {
     const mainWindow = new BrowserWindow({
         width: 1000,
@@ -43,13 +67,7 @@ function createWindow() {
     // mainWindow.webContents.openDevTools();
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") app.quit();
 });
@@ -70,11 +88,34 @@ function toIndex() {
 }
 
 ipcMain.on("publish", (event, data) => {
-    const [assignmentTitle, assignmentDetails, dueDate] = data;
+    const [userEmail, assignmentTitle, assignmentDetails, dueDate] = data;
+    const dueDateSplit = dueDate.split("-")
+    printBoth(dueDateSplit[0])
 
-    console.log("Received Assignment Title: " + assignmentTitle);
-    console.log("Received Assignment Details: " + assignmentDetails);
-    console.log("Received Due Date: " + dueDate);
+    const jsonFormat = {
+        "title": assignmentTitle,
+        "description": assignmentDetails,
+        "state": "PUBLISHED",
+        "dueDate": {
+            "year": parseInt(dueDateSplit[0]),
+            "month": parseInt(dueDateSplit[1]),
+            "day": parseInt(dueDateSplit[2])
+        },
+        "dueTime": {
+            "hours": 23,
+            "minutes": 59,
+            "seconds": 59,
+            "nanos": 0
+        },
+        "assigneeMode": "INDIVIDUAL_STUDENTS",
+        "individualStudentsOptions": {
+            "studentIds": userEmail
+        },
+        "submissionModificationMode": "MODIFIABLE",
+        "workType": "ASSIGNMENT"
+    };
+
+    pushJSON(jsonFormat)
 });
 
 ipcMain.on("import-send", (event, arg) => {

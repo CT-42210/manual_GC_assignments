@@ -42,18 +42,11 @@ def getAssignments():
             assignments = service.courses().courseWork().list(
                 courseId=course_id).execute()
 
-            for assignment in assignments.get('courseWork', []):
-                # Check if the assignment is not marked as done by the student
-                if not assignment.get('workType') == 'ASSIGNMENT':
-                    continue
+            for item in assignments.get('courseWork', []):
+                if item['state'] == 'PUBLISHED':
+                    print(item['title'])
+                    print(item['id'])
 
-                # List student submissions for the assignment
-                submissions = service.courses().courseWork().studentSubmissions().list(
-                    courseId=course_id, courseWorkId=assignment['id']).execute()
-
-                if not any(
-                        submission['state'] == 'TURNED_IN' for submission in submissions.get('studentSubmissions', [])):
-                    print(f"Assignment Name: {assignment['title']}")
 
                 exit(0)
     except HttpError as error:
