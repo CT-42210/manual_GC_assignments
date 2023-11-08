@@ -3,12 +3,14 @@ import server
 import json
 
 
-def process_json(data):
+def process_json(protocol, data, assignmentID):
     try:
-        print(data)
-        # Your JSON data processing logic goes here
-        # Replace this example logic with your own implementation
-        server.main(data)
+        if protocol == 0:
+            print(data)
+            server.create(data)
+        if protocol == 1:
+            print(data)
+            server.edit(assignmentID, data)
 
         return 0
     except Exception as e:

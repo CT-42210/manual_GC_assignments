@@ -12,6 +12,8 @@ from googleapiclient.errors import HttpError
 with (open('server_scopes', 'r') as scopes):
     SCOPES = scopes.read().splitlines()
 
+gcID = '629265502936'
+
 
 def jsonPushFormat(title, description, dueDate, student_email):
     assignment = {
@@ -39,29 +41,9 @@ def jsonPushFormat(title, description, dueDate, student_email):
     return assignment
 
 
-def createAssignment(service, course_id, data):
-    try:
-        # assignment = jsonPushFormat(title, description, dueDate, student_email)
-        assignment = json.loads(data)
-        print(assignment)
-        created_assignment = service.courses().courseWork().create(
-            courseId=course_id, body=assignment).execute()
-        print('Assignment created:')
-        print('Title: {}'.format(created_assignment['title']))
-        print('ID: {}'.format(created_assignment['id']))
-
-    except HttpError as error:
-        print('An error occurred: %s' % error)
-
-
-def main(data):
-    """Shows basic usage of the Classroom API.
-    Prints the names of the first 10 courses the user has access to.
-    """
+def create(data):
     creds = None
-    # The file token.json stores the user's access and refresh tokens, and is
-    # created automatically when the authorization flow completes for the first
-    # time.
+
     if os.path.exists('token.json'):
         creds = Credentials.from_authorized_user_file('token.json', SCOPES)
     # If there are no (valid) credentials available, let the user log in.
@@ -79,18 +61,45 @@ def main(data):
     service = build('classroom', 'v1', credentials=creds)
 
     try:
-        results = service.courses().list(pageSize=10).execute()
-        print(results)
-        courses = results.get('courses', [])
-
-        if not courses:
-            print('No courses found.')
-            return
-        print('Courses:')
-        for course in courses:
-            print(course['name'])
+        assignment = json.loads(data)
+        print(assignment)
+        created_assignment = service.courses().courseWork().create(
+            courseId=gcID, body=assignment).execute()
+        print('Assignment created:')
+        print('Title: {}'.format(created_assignment['title']))
+        print('ID: {}'.format(created_assignment['id']))
 
     except HttpError as error:
         print('An error occurred: %s' % error)
 
-    createAssignment(service, '629265502936', data)
+
+def edit(assignmentID, data):
+    creds = None
+
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    service = build('classroom', 'v1', credentials=creds)
+
+    try:
+        assignment = json.loads(data)
+        print(assignment)
+        edited_assignment = service.courses().courseWork().patch(
+            courseId=gcID, id=assignmentID, body=assignment).execute()
+        print('Assignment edited:')
+        print('Title: {}'.format(edited_assignment['title']))
+        print('ID: {}'.format(edited_assignment['id']))
+
+    except HttpError as error:
+        print('An error occurred: %s' % error)
