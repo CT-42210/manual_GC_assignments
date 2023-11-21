@@ -62,6 +62,11 @@
                         <!--- main body --->
                         <form class="mt-4">
                             <div class="mb-3">
+                                <label for="assignmentDropdown">Select Assignment:</label>
+                                <select type="text" id="assignmentDropdown" name="assignmentDropdown"></select>
+                            </div>
+                            <form class="mt-4">
+                            <div class="mb-3">
                                 <label for="assignmentTitle" class="form-label">Assignment Title</label>
                                 <input type="text" class="form-control" id="assignmentTitle" name="assignmentTitle">
                             </div>
@@ -76,29 +81,11 @@
                         </form>
                         <div class="pt-3 row">
                             <div class="col-xl-3 col-md-6">
-                                <div class="card bg-success text-white mb-4">
-                                    <div class="card-body">Select Assignment to Edit</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a id="selectButton" class="small text-white stretched-link" href="#">Select</a>
-                                        <div class="small text-white"><i class="fa fa-list"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
                                 <div class="card bg-primary text-white mb-4">
                                     <div class="card-body">Update Assignment</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a id='publishButton' class="small text-white stretched-link" href="#">Update</a>
-                                        <div class="small text-white"><i class="fas fa-upload"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xl-3 col-md-6">
-                                <div class="card bg-warning text-white mb-4">
-                                    <div class="card-body">Export Assignment to File</div>
-                                    <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a id="exportButton" class="small text-white stretched-link" href="#">Export</a>
-                                        <div class="small text-white"><i class="fas fa-save"></i></div>
+                                        <a id="editPublishButton" class="small text-white stretched-link" href="#">Update</a>
+                                        <div class="small text-white"><svg class="svg-inline--fa fa-upload" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="upload" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M288 109.3V352c0 17.7-14.3 32-32 32s-32-14.3-32-32V109.3l-73.4 73.4c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l128-128c12.5-12.5 32.8-12.5 45.3 0l128 128c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L288 109.3zM64 352H192c0 35.3 28.7 64 64 64s64-28.7 64-64H448c35.3 0 64 28.7 64 64v32c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V416c0-35.3 28.7-64 64-64zM432 456a24 24 0 1 0 0-48 24 24 0 1 0 0 48z"></path></svg><!-- <i class="fas fa-upload"></i> Font Awesome fontawesome.com --></div>
                                     </div>
                                 </div>
                             </div>
@@ -106,9 +93,8 @@
                                 <div class="card bg-danger text-white mb-4">
                                     <div class="card-body">Delete Assignment</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a id="" class="small text-white stretched-link"
-                                           href="login.html">Delete</a>
-                                        <div class="small text-white"><i class="fas fa-trash"></i></div>
+                                        <a class="small text-white stretched-link" href="#">Delete</a>
+                                        <div class="small text-white"><svg class="svg-inline--fa fa-xmark" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" data-fa-i2svg=""><path fill="currentColor" d="M310.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 210.7 54.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L114.7 256 9.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 301.3 265.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L205.3 256 310.6 150.6z"></path></svg><!-- <i class="fas fa-close"></i> Font Awesome fontawesome.com --></div>
                                     </div>
                                 </div>
                             </div>

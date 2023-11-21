@@ -12,6 +12,7 @@ gcID = '629265502936'
 with (open('client_scopes', 'r') as scopes):
     SCOPES = scopes.read().splitlines()
 
+
 def loginFileExec(username, useremail):
     file_name = "login"
 

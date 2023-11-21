@@ -19,21 +19,18 @@ function pushJSON(data) {
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json', // Set the content type to JSON
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(data), // Convert the data to JSON format
+      body: JSON.stringify(data),
     };
 
-    // Send the POST request
     fetch(url, requestOptions)
-      .then(response => response.json()) // Parse the response as JSON
+      .then(response => response.json())
       .then(data => {
         console.log('Response data:', data);
-        // Handle the response data here
       })
       .catch(error => {
         console.error('Error:', error);
-        // Handle errors here
       });
 }
 
@@ -116,6 +113,44 @@ ipcMain.on("publish", (event, data) => {
     };
 
     pushJSON(jsonFormat)
+});
+
+ipcMain.on("publishEdit", (event, data) => {
+    const [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate] = data;
+    const dueDateSplit = dueDate.split("-")
+    printBoth(dueDateSplit[0])
+
+    const jsonFormat = {
+        "id": assignmentID,
+        "title": assignmentTitle,
+        "description": assignmentDetails,
+        "state": "PUBLISHED",
+        "dueDate": {
+            "year": parseInt(dueDateSplit[0]),
+            "month": parseInt(dueDateSplit[1]),
+            "day": parseInt(dueDateSplit[2])
+        },
+        "dueTime": {
+            "hours": 23,
+            "minutes": 59,
+            "seconds": 59,
+            "nanos": 0
+        },
+    };
+
+    pushJSON(jsonFormat)
+});
+
+ipcMain.on("load-edit-page", (event) => {
+    console.log("executing login");
+    const pythonScriptPath = "getAssignments.py";
+    child = execFile("python.exe", [pythonScriptPath], (error, stdout, stderr) => {
+        if (error !== null) {
+            console.log("exec error: " + error);
+        } else {
+            event.reply("return-edit-page", stdout);
+        }
+    });
 });
 
 ipcMain.on("import-send", (event, arg) => {

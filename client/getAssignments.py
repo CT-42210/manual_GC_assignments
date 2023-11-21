@@ -11,6 +11,8 @@ with (open('client_scopes', 'r') as scopes):
 
 gcID = '629265502936'
 
+assignmentList = []
+
 
 def getAssignments():
     creds = None
@@ -44,9 +46,10 @@ def getAssignments():
 
             for item in assignments.get('courseWork', []):
                 if item['state'] == 'PUBLISHED':
-                    print(item['title'])
-                    print(item['id'])
+                    assignmentData = [item['title'], item['id']]
+                    assignmentList.append(assignmentData)
 
+            print(assignmentList)
     except HttpError as error:
         print(error)
         exit(1)

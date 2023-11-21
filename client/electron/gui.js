@@ -1,4 +1,4 @@
-const { exec } = require("child_process");
+const { exec, execFile} = require("child_process");
 const fs = require("fs");
 const nodeConsole = require("console");
 const { ipcRenderer, dialog } = require("electron");
@@ -61,32 +61,6 @@ const sendToProgram = (str) => {
     });
 };
 
-const startCodeFunction = () => {
-    printBoth("Initiating program");
-
-    child = exec("python -i ./python/pythonExample.py", (error) => {
-        if (error) {
-            printBoth(`exec error: ${error}`);
-        }
-    });
-
-    child.stdout.on("data", (data) => {
-        printBoth(`Following data has been piped from python program: ${data.toString("utf8")}`);
-    });
-};
-
-const sendCodeFunction = () => {
-    const stringToSend = document.getElementById("string_to_send").value;
-    printBoth(`Sending "${stringToSend}" to program`);
-    sendToProgram(stringToSend);
-};
-
-const stopCodeFunction = () => {
-    printBoth("Terminated program");
-    sendToProgram("terminate");
-    child.stdin.end();
-};
-
 const login = () => {
     printBoth("attempting login");
     ipcRenderer.send("login", "True");
@@ -118,20 +92,17 @@ ipcRenderer.on("import-reply", (event, data) => {
 });
 
 function publish(event) {
-    event.preventDefault(); // Prevent the form from submitting if it's inside a form element
+    event.preventDefault();
 
-    // Access the form elements by their IDs
     const assignmentTitle = document.getElementById("assignmentTitle").value;
     const assignmentDetails = document.getElementById("assignmentDetails").value;
     const dueDate = document.getElementById("dueDate").value;
 
     if (assignmentTitle.trim() === "" || assignmentDetails.trim() === "" || dueDate.trim() === "") {
-        // Display an error message or take appropriate action
         alert("Please fill in all form fields.");
-        return; // Exit the function to prevent further execution
+        return;
     }
 
-    // Now you can work with the collected data
     console.log("Assignment Title: " + assignmentTitle);
     console.log("Assignment Details: " + assignmentDetails);
     console.log("Due Date: " + dueDate);
@@ -149,6 +120,61 @@ function publish(event) {
     document.getElementById("assignmentDetails").value = "";
     document.getElementById("dueDate").value = "";
 }
+
+function loadEditPage() {
+    ipcRenderer.send("load-edit-page");
+}
+
+ipcRenderer.on("return-edit-page", (event, data) => {
+    const dataArray = JSON.parse(data.replace(/'/g, '"'));
+
+    const dropdown = document.getElementById("assignmentDropdown");
+
+    const option = document.createElement("option");
+    option.value = "default"; // Use the assignment Id as the option value
+    option.text = "TITLE - ID"; // Use the assignment title as the option text
+    dropdown.add(option);
+
+    for (let i = 0; i < dataArray.length; i++) {
+        const option = document.createElement("option");
+        option.value = dataArray[i][1]; // Use the assignment Id as the option value
+        option.text = (dataArray[i][0] + " - " + dataArray[i][1]); // Use the assignment title as the option text
+        dropdown.add(option);
+    }
+});
+
+function edit(event) {
+    event.preventDefault();
+
+    const assignmentID = 122345
+
+    const assignmentTitle = document.getElementById("assignmentTitle").value;
+    const assignmentDetails = document.getElementById("assignmentDetails").value;
+    const dueDate = document.getElementById("dueDate").value;
+
+    if (assignmentTitle.trim() === "" || assignmentDetails.trim() === "" || dueDate.trim() === "") {
+        alert("Please fill in all form fields.");
+        return;
+    }
+
+    console.log("Assignment Title: " + assignmentTitle);
+    console.log("Assignment Details: " + assignmentDetails);
+    console.log("Due Date: " + dueDate);
+
+    userData(1, (result) => {
+            userEmail = result;
+        });
+
+    const data = [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate];
+    printBoth("attempting edit");
+    ipcRenderer.send("edit", data);
+
+    window.location.reload();
+    document.getElementById("assignmentTitle").value = "";
+    document.getElementById("assignmentDetails").value = "";
+    document.getElementById("dueDate").value = "";
+}
+
 
 function exportFile(event) {
     event.preventDefault();
@@ -172,7 +198,6 @@ function exportFile(event) {
         dueDate: dueDate,
     };
 
-    // Convert the object to a JSON string
     const jsonData = JSON.stringify(assignmentData);
 
     dialog
@@ -274,6 +299,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const publishButton = document.getElementById("publishButton");
     if (publishButton) {
         publishButton.addEventListener("click", publish);
+    }
+
+    const editPublishButton = document.getElementById("editPublishButton");
+    if (editPublishButton) {
+        editPublishButton.addEventListener("click", edit);
+    }
+
+    const assignmentDropdown = document.getElementById("assignmentDropdown");
+    if (assignmentDropdown) {
+        loadEditPage();
     }
 
     const exportButton = document.getElementById("exportButton");
