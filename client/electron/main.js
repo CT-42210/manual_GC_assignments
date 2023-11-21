@@ -39,7 +39,7 @@ function pushJSON(data) {
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 1000,
+        width: 1050,
         height: 750,
         resizable: true,
         webPreferences: {
@@ -74,7 +74,7 @@ app.on("window-all-closed", function () {
 
 function toIndex() {
     const mainWindow = new BrowserWindow({
-        width: 1000,
+        width: 1050,
         height: 750,
         resizable: true,
         webPreferences: {
