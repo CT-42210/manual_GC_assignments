@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">manualGCassignments</string>
+    <string name="title_activity_main">manualGCassignments</string>
+    <string name="package_name">net.mbs.manualgcassignments</string>
+    <string name="custom_url_scheme">net.mbs.manualgcassignments</string>
+</resources>
