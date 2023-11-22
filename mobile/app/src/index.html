@@ -78,7 +78,8 @@
                                 <div class="card bg-primary text-white mb-4">
                                     <div class="card-body">Post to Google Classroom</div>
                                     <div class="card-footer d-flex align-items-center justify-content-between">
-                                        <a id="publishButton" class="small text-white stretched-link" href="#">Publish</a>
+                                        <a id="publishButton" class="small text-white stretched-link"
+                                           onclick="publishButtonExec()">Publish</a>
                                         <div class="small text-white"><i class="fa-solid fa-upload"></i></div>
                                     </div>
                                 </div>
@@ -111,8 +112,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
         <script>
-            const publishButton = document.getElementById("publishButton");
-
             function publishButtonExec(){
                 const assigneeEmail = document.getElementById("assigneeEmail").value;
                 const assignmentTitle = document.getElementById("assignmentTitle").value;
@@ -120,43 +119,48 @@
                 const dueDate = document.getElementById("dueDate").value;
                 const dueDateSplit = dueDate.split("-")
 
-                const baseurl = 'https://manual-gc-assignments.ngrok.dev';
-                const url = baseurl + "/create"
-                const data = {
-                    "title": assignmentTitle,
-                    "description": assignmentDetails,
-                    "state": "PUBLISHED",
-                    "dueDate": {
-                        "year": parseInt(dueDateSplit[0]),
-                        "month": parseInt(dueDateSplit[1]),
-                        "day": parseInt(dueDateSplit[2])
-                    },
-                    "dueTime": {"hours": 23, "minutes": 59, "seconds": 59, "nanos": 0},
-                    "assigneeMode": "INDIVIDUAL_STUDENTS",
-                    "individualStudentsOptions": {"studentIds": assigneeEmail},
-                    "submissionModificationMode": "MODIFIABLE",
-                    "workType": "ASSIGNMENT"
+                if ( assigneeEmail === "" || assignmentTitle === "" || assignmentDetails === "" || dueDate === "" ) {
+                } else {
+                    document.getElementById("publishButton").onclick = null;
+
+                    const baseurl = 'https://manual-gc-assignments.ngrok.dev';
+                    const url = baseurl + "/create"
+                    const data = {
+                        "title": assignmentTitle,
+                        "description": assignmentDetails,
+                        "state": "PUBLISHED",
+                        "dueDate": {
+                            "year": parseInt(dueDateSplit[0]),
+                            "month": parseInt(dueDateSplit[1]),
+                            "day": parseInt(dueDateSplit[2])
+                        },
+                        "dueTime": {"hours": 23, "minutes": 59, "seconds": 59, "nanos": 0},
+                        "assigneeMode": "INDIVIDUAL_STUDENTS",
+                        "individualStudentsOptions": {"studentIds": assigneeEmail},
+                        "submissionModificationMode": "MODIFIABLE",
+                        "workType": "ASSIGNMENT"
+                    }
+
+                    const requestOptions = {
+                        method: 'POST',
+                        contentType: "application/json",
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data), // Convert the data to JSON format
+                    };
+
+                    fetch(url, requestOptions)
+                      .then(response => response.json())
+                      .then(data => {
+                        console.log('Response data:', data);
+                      })
+                      .catch(error => {
+                        console.error('Error:', error);
+                      });
                 }
-
-                const requestOptions = {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json', // Set the content type to JSON
-                  },
-                  body: JSON.stringify(data), // Convert the data to JSON format
-                };
-
-                fetch(url, requestOptions)
-                  .then(response => response.json())
-                  .then(data => {
-                    console.log('Response data:', data);
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                  });
             }
-
-            publishButton.addEventListener("click", publishButtonExec);
         </script>
 </body>
 </html>
