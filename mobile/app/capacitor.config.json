@@ -1,0 +1,11 @@
+{
+  "appId": "net.mbs.manualgcassignments",
+  "appName": "manualGCassignments",
+  "bundledWebRuntime": false,
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}

@@ -7,7 +7,7 @@ import process_data
 app = Flask(__name__)
 
 
-@app.route('/', methods=['POST'])
+@app.route('/create', methods=['POST'])
 def reciveCreateAssignment():
     try:
         data = request.get_json()

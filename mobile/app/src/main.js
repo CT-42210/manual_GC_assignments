@@ -13,9 +13,8 @@ function printBoth(str) {
     myConsole.log("main.js:    " + str);
 }
 
-function pushJSON(data, type) {
-    const baseurl = 'https://manual-gc-assignments.ngrok.dev';
-    const url = baseurl + type
+function pushJSON(data) {
+    const url = 'https://manual-gc-assignments.ngrok.dev';
 
     const requestOptions = {
       method: 'POST',
@@ -113,7 +112,7 @@ ipcMain.on("publish", (event, data) => {
         "workType": "ASSIGNMENT"
     };
 
-    pushJSON(jsonFormat, "/create")
+    pushJSON(jsonFormat)
 });
 
 ipcMain.on("publishEdit", (event, data) => {
@@ -139,7 +138,7 @@ ipcMain.on("publishEdit", (event, data) => {
         },
     };
 
-    pushJSON(jsonFormat, "/edit")
+    pushJSON(jsonFormat)
 });
 
 ipcMain.on("load-edit-page", (event) => {
