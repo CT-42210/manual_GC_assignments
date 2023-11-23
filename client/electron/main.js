@@ -29,10 +29,11 @@ function pushJSON(data, type) {
       .then(response => response.json())
       .then(data => {
         console.log('Response data:', data);
-        showSuccessPopup();
+        return 0
       })
       .catch(error => {
         console.error('Error:', error);
+        return 1
       });
 }
 
@@ -101,7 +102,7 @@ ipcMain.on("publish", (event, data) => {
             "day": parseInt(dueDateSplit[2])
         },
         "dueTime": {
-            "hours": 27,
+            "hours": 23,
             "minutes": 59,
             "seconds": 59,
             "nanos": 0
@@ -114,10 +115,11 @@ ipcMain.on("publish", (event, data) => {
         "workType": "ASSIGNMENT"
     };
 
-    pushJSON(jsonFormat, "/create")
+    const responseCode = pushJSON(jsonFormat, "/create")
+    event.reply("publish-reply", responseCode)
 });
 
-ipcMain.on("publishEdit", (event, data) => {
+ipcMain.on("edit", (event, data) => {
     const [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate] = data;
     const dueDateSplit = dueDate.split("-")
     printBoth(dueDateSplit[0])

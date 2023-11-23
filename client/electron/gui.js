@@ -121,6 +121,14 @@ function publish(event) {
     document.getElementById("dueDate").value = "";
 }
 
+ipcRenderer.on("publish-reply", (event, responseCode) => {
+    if (responseCode === 0) {
+        showSuccessPopup();
+    } else {
+        // showFailurePopup();
+    }
+});
+
 function loadEditPage() {
     ipcRenderer.send("load-edit-page");
 }
@@ -175,6 +183,53 @@ function edit(event) {
     document.getElementById("dueDate").value = "";
 }
 
+ipcRenderer.on("edit-reply", (event, responseCode) => {
+    if (responseCode === 0) {
+        showSuccessPopup();
+    } else {
+        // showFailurePopup();
+    }
+});
+
+function Delete(event) {
+    event.preventDefault();
+
+    const assignmentID = 122345
+
+    const assignmentTitle = document.getElementById("assignmentTitle").value;
+    const assignmentDetails = document.getElementById("assignmentDetails").value;
+    const dueDate = document.getElementById("dueDate").value;
+
+    if (assignmentTitle.trim() === "" || assignmentDetails.trim() === "" || dueDate.trim() === "") {
+        alert("Please fill in all form fields.");
+        return;
+    }
+
+    console.log("Assignment Title: " + assignmentTitle);
+    console.log("Assignment Details: " + assignmentDetails);
+    console.log("Due Date: " + dueDate);
+
+    userData(1, (result) => {
+            userEmail = result;
+        });
+
+    const data = [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate];
+    printBoth("attempting delete");
+    ipcRenderer.send("delete", data);
+
+    window.location.reload();
+    document.getElementById("assignmentTitle").value = "";
+    document.getElementById("assignmentDetails").value = "";
+    document.getElementById("dueDate").value = "";
+}
+
+ipcRenderer.on("delete-reply", (event, responseCode) => {
+    if (responseCode === 0) {
+        showSuccessPopup();
+    } else {
+        // showFailurePopup();
+    }
+});
 
 function exportFile(event) {
     event.preventDefault();
@@ -230,60 +285,6 @@ function exportFile(event) {
     document.getElementById("dueDate").value = "";
 }
 
-function exportFileAdvanced(event) {
-    event.preventDefault();
-
-    const assignmentTitle = document.getElementById("assignmentTitle").value;
-    const assignmentDetails = document.getElementById("assignmentDetails").value;
-    const dueDate = document.getElementById("dueDate").value;
-
-    if (assignmentTitle.trim() === "" || assignmentDetails.trim() === "" || dueDate.trim() === "") {
-        alert("Please fill in all form fields.");
-        return;
-    }
-
-    console.log("Assignment Title: " + assignmentTitle);
-    console.log("Assignment Details: " + assignmentDetails);
-    console.log("Due Date: " + dueDate);
-
-    const assignmentData = {
-        title: assignmentTitle,
-        details: assignmentDetails,
-        dueDate: dueDate,
-    };
-
-    // Convert the object to a JSON string
-    const jsonData = JSON.stringify(assignmentData);
-
-    dialog
-        .showSaveDialog({
-            title: "Export Assignment",
-            defaultPath: "assignment.json", // Default file name and extension
-            filters: [{ name: "JSON Files", extensions: ["json"] }],
-        })
-        .then((result) => {
-            // Check if the user chose a file location
-            if (!result.canceled) {
-                const filePath = result.filePath;
-
-                fs.writeFile(filePath, jsonData, (err) => {
-                    if (err) {
-                        console.error("Error writing the JSON file:", err);
-                    } else {
-                        console.log("JSON file saved successfully:", filePath);
-                    }
-                });
-            }
-        })
-        .catch((error) => {
-            console.error("Error during save dialog:", error);
-        });
-
-    window.location.reload();
-    document.getElementById("assignmentTitle").value = "";
-    document.getElementById("assignmentDetails").value = "";
-    document.getElementById("dueDate").value = "";
-}
 
 document.addEventListener("DOMContentLoaded", () => {
     const loginButton = document.getElementById("login");
