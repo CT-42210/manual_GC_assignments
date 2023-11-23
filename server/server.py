@@ -1,44 +1,21 @@
 from __future__ import print_function
-
-import os.path
-import json
-
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+import os.path
+import json
 
 with (open('server_scopes', 'r') as scopes):
     SCOPES = scopes.read().splitlines()
 
 gcID = '629265502936'
-
-
-def jsonPushFormat(title, description, dueDate, student_email):
-    assignment = {
-        'title': title,
-        'description': description,
-        'state': 'PUBLISHED',
-        'dueDate': {
-            'year': dueDate[0],
-            'month': dueDate[1],
-            'day': dueDate[2],
-        },
-        'dueTime': {
-            'hours': 23,
-            'minutes': 59,
-            'seconds': 59,
-            'nanos': 0
-        },
-        'assigneeMode': 'INDIVIDUAL_STUDENTS',
-        'individualStudentsOptions': {
-            'studentIds': student_email
-        },
-        'submissionModificationMode': 'MODIFIABLE',
-        'workType': 'ASSIGNMENT'
-    }
-    return assignment
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 
 def create(data):
@@ -68,9 +45,11 @@ def create(data):
         print('Assignment created:')
         print('Title: {}'.format(created_assignment['title']))
         print('ID: {}'.format(created_assignment['id']))
+        return 0
 
     except HttpError as error:
         print('An error occurred: %s' % error)
+        return 1
 
 
 def edit(assignmentID, data):
@@ -100,6 +79,98 @@ def edit(assignmentID, data):
         print('Assignment edited:')
         print('Title: {}'.format(edited_assignment['title']))
         print('ID: {}'.format(edited_assignment['id']))
+        return 0
 
     except HttpError as error:
         print('An error occurred: %s' % error)
+        return 1
+
+
+def delete(assignmentID, data):
+    creds = None
+
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+
+    service = build('classroom', 'v1', credentials=creds)
+
+    try:
+        assignment = json.loads(data)
+        print(assignment)
+        deleted_assignment = service.courses().courseWork().delete(
+            courseId=gcID, id=assignmentID, body=assignment).execute()
+        print('Assignment deleted:')
+        print('Title: {}'.format(deleted_assignment['title']))
+        print('ID: {}'.format(deleted_assignment['id']))
+        return 0
+
+    except HttpError as error:
+        print('An error occurred: %s' % error)
+        return 1
+
+
+def process_json(protocol, data, assignmentID):
+    try:
+        if protocol == 0:
+            print(data)
+            returnCode = create(data)
+            return returnCode
+        if protocol == 1:
+            print(data)
+            retunrCode = edit(assignmentID, data)
+            return retunrCode
+        if protocol == 2:
+            print(data)
+            returnCode = delete(assignmentID, data)
+            return returnCode
+    except Exception as e:
+        print(f"Error: {e}")
+        return 1
+
+
+@app.route('/create', methods=['POST'])
+def reciveCreateAssignment():
+    try:
+        data = request.get_json()
+        result_code = process_json(0, json.dumps(data), 0)
+        return jsonify({"result_code": result_code})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"result_code": 1})
+
+
+@app.route('/edit', methods=['POST'])
+def reciveEditAssignment():
+    try:
+        data = request.get_json()
+        result_code = process_json(1, json.dumps(data), 0)
+        return jsonify({"result_code": result_code})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"result_code": 1})
+
+
+@app.route('/delete', methods=['POST'])
+def reciveDeleteAssignment():
+    try:
+        data = request.get_json()
+        result_code = process_json(2, json.dumps(data), 0)
+        return jsonify({"result_code": result_code})
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({"result_code": 1})
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)

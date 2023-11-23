@@ -29,6 +29,7 @@ function pushJSON(data, type) {
       .then(response => response.json())
       .then(data => {
         console.log('Response data:', data);
+        showSuccessPopup();
       })
       .catch(error => {
         console.error('Error:', error);
@@ -100,7 +101,7 @@ ipcMain.on("publish", (event, data) => {
             "day": parseInt(dueDateSplit[2])
         },
         "dueTime": {
-            "hours": 23,
+            "hours": 27,
             "minutes": 59,
             "seconds": 59,
             "nanos": 0

@@ -120,5 +120,16 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
+        <script>
+            function showSuccessPopup() {
+                const popupDiv = document.createElement("div");
+                popupDiv.className = "alert alert-success";
+                popupDiv.innerHTML = "<strong>Success!</strong> Assignment published successfully.";
+                document.body.appendChild(popupDiv);
+                setTimeout(() => {
+                    popupDiv.style.display = "none";
+                }, 5000);
+            }
+        </script>
 </body>
 </html>
