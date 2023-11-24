@@ -147,14 +147,36 @@ ipcMain.on("edit", (event, data) => {
 
 ipcMain.on("load-edit-page", (event) => {
     console.log("executing login");
-    const pythonScriptPath = "getAssignments.py";
-    child = execFile("python.exe", [pythonScriptPath], (error, stdout, stderr) => {
+    const pythonScriptPath = "fetchAssignments.py";
+    child = execFile("python.exe", [pythonScriptPath], (error, stdout) => {
         if (error !== null) {
             console.log("exec error: " + error);
         } else {
-            event.reply("return-edit-page", stdout);
+            event.reply("load-edit-page-reply", stdout);
         }
     });
+});
+
+ipcMain.on("get-assignment", (event, assignmentID) => {
+    console.log("recived by main")
+    const pythonScriptPath = "getAssignment.py"
+    execFile('python', [pythonScriptPath, assignmentID], (error, stdout) => {
+        if (error !== null) {
+            console.log("exec error: " + error);
+        } else {
+            event.reply("get-assignment-reply", stdout);
+        }
+    });
+});
+
+ipcMain.on("delete", (event, data) => {
+    const [assignmentID] = data;
+
+    const jsonFormat = {
+        "id": assignmentID,
+    };
+
+    pushJSON(jsonFormat, "/delete")
 });
 
 ipcMain.on("import-send", (event, arg) => {

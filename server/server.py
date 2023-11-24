@@ -7,7 +7,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import os.path
-import json
 
 with (open('server_scopes', 'r') as scopes):
     SCOPES = scopes.read().splitlines()
@@ -38,10 +37,9 @@ def create(data):
     service = build('classroom', 'v1', credentials=creds)
 
     try:
-        assignment = json.loads(data)
-        print(assignment)
+        print(data)
         created_assignment = service.courses().courseWork().create(
-            courseId=gcID, body=assignment).execute()
+            courseId=gcID, body=data).execute()
         print('Assignment created:')
         print('Title: {}'.format(created_assignment['title']))
         print('ID: {}'.format(created_assignment['id']))
@@ -72,10 +70,16 @@ def edit(assignmentID, data):
     service = build('classroom', 'v1', credentials=creds)
 
     try:
-        assignment = json.loads(data)
-        print(assignment)
+        print(data)
+        update_mask = "title,description,dueDate,dueTime"
+
         edited_assignment = service.courses().courseWork().patch(
-            courseId=gcID, id=assignmentID, body=assignment).execute()
+            courseId=gcID,
+            id=assignmentID,
+            body=data,
+            updateMask=update_mask
+        ).execute()
+
         print('Assignment edited:')
         print('Title: {}'.format(edited_assignment['title']))
         print('ID: {}'.format(edited_assignment['id']))
@@ -86,7 +90,7 @@ def edit(assignmentID, data):
         return 1
 
 
-def delete(assignmentID, data):
+def delete(assignmentID):
     creds = None
 
     if os.path.exists('token.json'):
@@ -106,13 +110,9 @@ def delete(assignmentID, data):
     service = build('classroom', 'v1', credentials=creds)
 
     try:
-        assignment = json.loads(data)
-        print(assignment)
-        deleted_assignment = service.courses().courseWork().delete(
-            courseId=gcID, id=assignmentID, body=assignment).execute()
-        print('Assignment deleted:')
-        print('Title: {}'.format(deleted_assignment['title']))
-        print('ID: {}'.format(deleted_assignment['id']))
+        service.courses().courseWork().delete(
+            courseId=gcID, id=assignmentID).execute()
+        print('Assignment deleted')
         return 0
 
     except HttpError as error:
@@ -120,31 +120,12 @@ def delete(assignmentID, data):
         return 1
 
 
-def process_json(protocol, data, assignmentID):
-    try:
-        if protocol == 0:
-            print(data)
-            returnCode = create(data)
-            return returnCode
-        if protocol == 1:
-            print(data)
-            retunrCode = edit(assignmentID, data)
-            return retunrCode
-        if protocol == 2:
-            print(data)
-            returnCode = delete(assignmentID, data)
-            return returnCode
-    except Exception as e:
-        print(f"Error: {e}")
-        return 1
-
-
 @app.route('/create', methods=['POST'])
 def reciveCreateAssignment():
     try:
         data = request.get_json()
-        result_code = process_json(0, json.dumps(data), 0)
-        return jsonify({"result_code": result_code})
+        returnCode = create(data)
+        return jsonify({"result_code": returnCode})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"result_code": 1})
@@ -154,8 +135,8 @@ def reciveCreateAssignment():
 def reciveEditAssignment():
     try:
         data = request.get_json()
-        result_code = process_json(1, json.dumps(data), 0)
-        return jsonify({"result_code": result_code})
+        retunrCode = edit(data['id'], data)
+        return jsonify({"result_code": retunrCode})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"result_code": 1})
@@ -165,8 +146,8 @@ def reciveEditAssignment():
 def reciveDeleteAssignment():
     try:
         data = request.get_json()
-        result_code = process_json(2, json.dumps(data), 0)
-        return jsonify({"result_code": result_code})
+        retunrCode = delete(data['id'])
+        return jsonify({"result_code": retunrCode})
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"result_code": 1})

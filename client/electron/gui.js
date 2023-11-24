@@ -133,7 +133,7 @@ function loadEditPage() {
     ipcRenderer.send("load-edit-page");
 }
 
-ipcRenderer.on("return-edit-page", (event, data) => {
+ipcRenderer.on("load-edit-page-reply", (event, data) => {
     const dataArray = JSON.parse(data.replace(/'/g, '"'));
 
     const dropdown = document.getElementById("assignmentDropdown");
@@ -145,17 +145,38 @@ ipcRenderer.on("return-edit-page", (event, data) => {
 
     for (let i = 0; i < dataArray.length; i++) {
         const option = document.createElement("option");
-        option.value = dataArray[i][1]; // Use the assignment Id as the option value
-        option.text = (dataArray[i][0] + " - " + dataArray[i][1]); // Use the assignment title as the option text
+        option.value = dataArray[i][0]; // Use the assignment Id as the option value
+        option.text = (dataArray[i][1] + " - " + dataArray[i][0]); // Use the assignment title as the option text
         dropdown.add(option);
     }
 });
 
+function getAssignment() {
+    const assignmentID = document.getElementById("assignmentDropdown").value;
+    ipcRenderer.send("get-assignment", assignmentID)
+    console.log("sent to main")
+}
+
+ipcRenderer.on("get-assignment-reply", (event, data) => {
+    const dataArray = JSON.parse(data.replace(/'/g, '"'));
+
+    const titleElement = document.getElementById("assignmentTitle");
+    const descriptionElement = document.getElementById("assignmentDetails");
+    const dueDateElement = document.getElementById("dueDate");
+
+    if (titleElement && descriptionElement && dueDateElement) {
+        titleElement.value = dataArray[1];
+        descriptionElement.value = dataArray[2];
+        dueDateElement.value = dataArray[3]['year'] + "-" + dataArray[3]['month'] + "-" + dataArray[3]['day'];
+    }
+});
+
+
+
 function edit(event) {
     event.preventDefault();
 
-    const assignmentID = 122345
-
+    const assignmentID = document.getElementById("assignmentDropdown").value;
     const assignmentTitle = document.getElementById("assignmentTitle").value;
     const assignmentDetails = document.getElementById("assignmentDetails").value;
     const dueDate = document.getElementById("dueDate").value;
@@ -168,6 +189,7 @@ function edit(event) {
     console.log("Assignment Title: " + assignmentTitle);
     console.log("Assignment Details: " + assignmentDetails);
     console.log("Due Date: " + dueDate);
+    console.log("assignment id: " + assignmentID)
 
     userData(1, (result) => {
             userEmail = result;
@@ -194,27 +216,15 @@ ipcRenderer.on("edit-reply", (event, responseCode) => {
 function Delete(event) {
     event.preventDefault();
 
-    const assignmentID = 122345
+    const assignmentID = document.getElementById("assignmentDropdown").value;
 
-    const assignmentTitle = document.getElementById("assignmentTitle").value;
-    const assignmentDetails = document.getElementById("assignmentDetails").value;
-    const dueDate = document.getElementById("dueDate").value;
-
-    if (assignmentTitle.trim() === "" || assignmentDetails.trim() === "" || dueDate.trim() === "") {
-        alert("Please fill in all form fields.");
-        return;
-    }
-
-    console.log("Assignment Title: " + assignmentTitle);
-    console.log("Assignment Details: " + assignmentDetails);
-    console.log("Due Date: " + dueDate);
+    console.log("assignment id: " + assignmentID)
 
     userData(1, (result) => {
             userEmail = result;
         });
 
-    const data = [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate];
-    printBoth("attempting delete");
+    const data = [assignmentID];
     ipcRenderer.send("delete", data);
 
     window.location.reload();
@@ -302,14 +312,25 @@ document.addEventListener("DOMContentLoaded", () => {
         publishButton.addEventListener("click", publish);
     }
 
-    const editPublishButton = document.getElementById("editPublishButton");
-    if (editPublishButton) {
-        editPublishButton.addEventListener("click", edit);
+    const editButton = document.getElementById("editButton");
+    if (editButton) {
+        editButton.addEventListener("click", edit);
     }
+
+    const deleteButton = document.getElementById("deleteButton");
+    if (deleteButton) {
+        deleteButton.addEventListener("click", Delete);
+    }
+
 
     const assignmentDropdown = document.getElementById("assignmentDropdown");
     if (assignmentDropdown) {
         loadEditPage();
+    }
+
+    const assignmentLoad = document.getElementById("assignmentLoad");
+    if (assignmentLoad) {
+        assignmentLoad.addEventListener("click", getAssignment);
     }
 
     const exportButton = document.getElementById("exportButton");
@@ -320,11 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const importButton = document.getElementById("importButton");
     if (importButton) {
         importButton.addEventListener("click", importFile);
-    }
-
-    const publishButtonAdvanced = document.getElementById("publishButtonAdvanced");
-    if (publishButtonAdvanced) {
-        publishButtonAdvanced.addEventListener("click", publishAdvanced);
     }
 
     var username = document.getElementById("username");
