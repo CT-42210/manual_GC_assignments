@@ -67,10 +67,10 @@
                         <textarea id="jsonEditor" class="m-4 CodeMirror">code</textarea>
                         <label for="codeSelectWindow" class="mt-3">Action Type</label>
                         <select id="codeSelectWindow">
-                            <option value="option0">---</option>
+                            <option value="option0">Select</option>
                             <option value="option1">Create</option>
                             <option value="option2">Edit</option>
-                            <option value="option3">Idk</option>
+                            <option value="option3">Delete</option>
                         </select>
                         <div class="pt-3 row">
                             <div class="col-xl-3 col-md-6">
@@ -121,48 +121,20 @@
             }
 
             const select = document.getElementById("codeSelectWindow");
+            const button = document.getElementById("publishButtonAdvanced");
 
             const jsonEditor = CodeMirror.fromTextArea(document.getElementById("jsonEditor"), {
                 mode: "application/ld+json",
-                lineNumbers: true, // Enable line numbers
-                lineWrapping: true, // Wrap lines
-                theme: "darcula", // Specify the theme name
+                lineNumbers: true,
+                lineWrapping: true,
+                theme: "darcula",
             });
 
             const templates = [
                 {"title": "pushFormat", "description": "DESCRIPTION", "state": "PUBLISHED", "dueDate": {"year": 2023, "month": 12, "day": 31}, "dueTime": {"hours": 23, "minutes": 59, "seconds": 59, "nanos": 0}, "assigneeMode": "INDIVIDUAL_STUDENTS", "individualStudentsOptions": {"studentIds": "EMAIL"}, "submissionModificationMode": "MODIFIABLE", "workType": "ASSIGNMENT"},
                 {"id": "assignmentID", "title": "editFormat", "description": "DESCRIPTION", "state": "PUBLISHED", "dueDate": {"year": 2023, "month": 12, "day": 31}, "dueTime": {"hours": 23, "minutes": 59, "seconds": 59, "nanos": 0}},
-                {"title": "pushFormat", "description": "DESCRIPTION", "state": "PUBLISHED", "dueDate": {"year": 2023, "month": 12, "day": 31}, "dueTime": {"hours": 23, "minutes": 59, "seconds": 59, "nanos": 0}, "assigneeMode": "INDIVIDUAL_STUDENTS", "individualStudentsOptions": {"studentIds": "EMAIL"}, "submissionModificationMode": "MODIFIABLE", "workType": "ASSIGNMENT"}
+                {"id": "assignmentID"}
             ]
-
-            const pushTemplate = JSON.stringify(templates[0], null, 2);
-            const editTemplate = JSON.stringify(templates[1], null, 2);
-            const idkTemplate = JSON.stringify(templates[2], null, 2);
-
-            function publishButtonAdvanced(){
-                data = jsonEditor.value
-                const url = 'https://manual-gc-assignments.ngrok.dev';
-
-                const requestOptions = {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json', // Set the content type to JSON
-                  },
-                  body: JSON.stringify(data), // Convert the data to JSON format
-                };
-
-                // Send the POST request
-                fetch(url, requestOptions)
-                  .then(response => response.json()) // Parse the response as JSON
-                  .then(data => {
-                    console.log('Response data:', data);
-                    showSuccessPopup();
-                  })
-                  .catch(error => {
-                    console.error('Error:', error);
-                    // Handle errors here
-                  });
-            }
 
             function updateEditorValue() {
                 const selectedOption = select.value;
@@ -176,10 +148,45 @@
                 }
             }
 
+            function pushJSON(url, data) {
+                const requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: data,
+                };
+
+                fetch(url, requestOptions)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response data:', data);
+                        showSuccessPopup();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+
+            function publishButtonAdvanced() {
+                const data = jsonEditor.value;
+                const baseurl = 'https://manual-gc-assignments.ngrok.dev';
+
+                if (select.value === "option1") {
+                    const url = baseurl + "/create"
+                    pushJSON(url, data)
+                } else if (select.value === "option2") {
+                    const url = baseurl + "/create"
+                    pushJSON(url, data)
+                } else if (select.value === "option3") {
+                    const url = baseurl + "/delete"
+                    pushJSON(url, data)
+                }
+            }
             updateEditorValue();
 
             select.addEventListener("change", updateEditorValue);
-            select.addEventListener("click", publishButtonAdvanced);
+            button.addEventListener("click", publishButtonAdvanced);
 
         </script>
     </body>
