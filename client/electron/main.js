@@ -14,27 +14,27 @@ function printBoth(str) {
 }
 
 function pushJSON(data, type) {
-    const baseurl = 'https://manual-gc-assignments.ngrok.dev';
-    const url = baseurl + type
+    const baseurl = "https://manual-gc-assignments.ngrok.dev";
+    const url = baseurl + type;
 
     const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
     };
 
     fetch(url, requestOptions)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Response data:', data);
-        return 0
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        return 1
-      });
+        .then((response) => response.json())
+        .then((data) => {
+            console.log("Response data:", data);
+            return 0;
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            return 1;
+        });
 }
 
 function createWindow() {
@@ -67,7 +67,6 @@ function createWindow() {
     // mainWindow.webContents.openDevTools();
 }
 
-
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") app.quit();
 });
@@ -89,60 +88,60 @@ function toIndex() {
 
 ipcMain.on("publish", (event, data) => {
     const [userEmail, assignmentTitle, assignmentDetails, dueDate] = data;
-    const dueDateSplit = dueDate.split("-")
-    printBoth(dueDateSplit[0])
+    const dueDateSplit = dueDate.split("-");
+    printBoth(dueDateSplit[0]);
 
     const jsonFormat = {
-        "title": assignmentTitle,
-        "description": assignmentDetails,
-        "state": "PUBLISHED",
-        "dueDate": {
-            "year": parseInt(dueDateSplit[0]),
-            "month": parseInt(dueDateSplit[1]),
-            "day": parseInt(dueDateSplit[2])
+        title: assignmentTitle,
+        description: assignmentDetails,
+        state: "PUBLISHED",
+        dueDate: {
+            year: parseInt(dueDateSplit[0]),
+            month: parseInt(dueDateSplit[1]),
+            day: parseInt(dueDateSplit[2]),
         },
-        "dueTime": {
-            "hours": 23,
-            "minutes": 59,
-            "seconds": 59,
-            "nanos": 0
+        dueTime: {
+            hours: 23,
+            minutes: 59,
+            seconds: 59,
+            nanos: 0,
         },
-        "assigneeMode": "INDIVIDUAL_STUDENTS",
-        "individualStudentsOptions": {
-            "studentIds": userEmail
+        assigneeMode: "INDIVIDUAL_STUDENTS",
+        individualStudentsOptions: {
+            studentIds: userEmail,
         },
-        "submissionModificationMode": "MODIFIABLE",
-        "workType": "ASSIGNMENT"
+        submissionModificationMode: "MODIFIABLE",
+        workType: "ASSIGNMENT",
     };
 
-    const responseCode = pushJSON(jsonFormat, "/create")
-    event.reply("publish-reply", responseCode)
+    const responseCode = pushJSON(jsonFormat, "/create");
+    event.reply("publish-reply", responseCode);
 });
 
 ipcMain.on("edit", (event, data) => {
     const [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate] = data;
-    const dueDateSplit = dueDate.split("-")
-    printBoth(dueDateSplit[0])
+    const dueDateSplit = dueDate.split("-");
+    printBoth(dueDateSplit[0]);
 
     const jsonFormat = {
-        "id": assignmentID,
-        "title": assignmentTitle,
-        "description": assignmentDetails,
-        "state": "PUBLISHED",
-        "dueDate": {
-            "year": parseInt(dueDateSplit[0]),
-            "month": parseInt(dueDateSplit[1]),
-            "day": parseInt(dueDateSplit[2])
+        id: assignmentID,
+        title: assignmentTitle,
+        description: assignmentDetails,
+        state: "PUBLISHED",
+        dueDate: {
+            year: parseInt(dueDateSplit[0]),
+            month: parseInt(dueDateSplit[1]),
+            day: parseInt(dueDateSplit[2]),
         },
-        "dueTime": {
-            "hours": 23,
-            "minutes": 59,
-            "seconds": 59,
-            "nanos": 0
+        dueTime: {
+            hours: 23,
+            minutes: 59,
+            seconds: 59,
+            nanos: 0,
         },
     };
 
-    pushJSON(jsonFormat, "/edit")
+    pushJSON(jsonFormat, "/edit");
 });
 
 ipcMain.on("load-edit-page", (event) => {
@@ -158,9 +157,9 @@ ipcMain.on("load-edit-page", (event) => {
 });
 
 ipcMain.on("get-assignment", (event, assignmentID) => {
-    console.log("recived by main")
-    const pythonScriptPath = "getAssignment.py"
-    execFile('python', [pythonScriptPath, assignmentID], (error, stdout) => {
+    console.log("recived by main");
+    const pythonScriptPath = "getAssignment.py";
+    execFile("python", [pythonScriptPath, assignmentID], (error, stdout) => {
         if (error !== null) {
             console.log("exec error: " + error);
         } else {
@@ -173,10 +172,10 @@ ipcMain.on("delete", (event, data) => {
     const [assignmentID] = data;
 
     const jsonFormat = {
-        "id": assignmentID,
+        id: assignmentID,
     };
 
-    pushJSON(jsonFormat, "/delete")
+    pushJSON(jsonFormat, "/delete");
 });
 
 ipcMain.on("import-send", (event, arg) => {

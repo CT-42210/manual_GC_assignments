@@ -14,17 +14,21 @@
     <body class="sb-nav-fixed">
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
             <!-- Navbar Brand-->
-            <button class="btn px-4 btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><svg class="svg-inline--fa fa-bars" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"></path></svg><!-- <i class="fas fa-bars"></i> Font Awesome fontawesome.com --></button>
+            <button class="btn px-4 btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!">
+                <svg class="svg-inline--fa fa-bars" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="bars" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
+                    <path
+                        fill="currentColor"
+                        d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"
+                    ></path>
+                </svg>
+                <!-- <i class="fas fa-bars"></i> Font Awesome fontawesome.com -->
+            </button>
             <a class="navbar-brand ps-3" href="index.html">Manual GC Assignments</a>
             <!-- Sidebar Toggle-->
             <!-- Navbar Search-->
-            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-
-            </form>
+            <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0"></form>
             <!-- Navbar-->
-            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-
-            </ul>
+            <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4"></ul>
         </nav>
         <div id="layoutSidenav">
             <!-- START SIDEBAR -->
@@ -52,7 +56,7 @@
                             </a>
                         </div>
                     </div>
-                    <text id='username' class="sb-sidenav-footer">No User Logged In</text>
+                    <text id="username" class="sb-sidenav-footer">No User Logged In</text>
                 </nav>
             </div>
             <!-- END SIDEBAR -->
@@ -61,27 +65,22 @@
                     <div class="container-fluid px-4">
                         <!--- main body --->
                         <p class="mt-4">Built by <b>Nick Troiano</b> '25</p>
-                            <a class="link-info" href="https://github.com/CT-42210/manual_GC_assignments">
-                            https://github.com/CT-42210/manual_GC_assignments</a>
+                        <a class="link-info" href="https://github.com/CT-42210/manual_GC_assignments"> https://github.com/CT-42210/manual_GC_assignments</a>
                         <h5 class="mt-4">About</h5>
                         <p>
-                            Manual GC Assignments is an app addressing Google Classroom's biggest weakness:
-                            Students cannot create assignments and reminders.
+                            Manual GC Assignments is an app addressing Google Classroom's biggest weakness: Students cannot create assignments and reminders.
                         </p>
                         <h5>Why can't students create their own assignments?</h5>
                         <p>
-                            Google Classroom has two types of users: a teacher and a student.
-                            Teachers manage the classrooms and classwork, while students "edit" the classwork.
-                            In addition, students receive emails, notifications, and a compiled to-do list encompassing their assigned work.
-                            While a student account can be added as a teacher to a class,
-                            it does not allow them to receive the same benefits as students,
-                            such as email notifications and the GC to-do list.
-                            What's the solution? To automate the teacher.
+                            Google Classroom has two types of users: a teacher and a student. Teachers manage the classrooms and classwork, while students "edit" the classwork. In addition, students receive emails, notifications, and a
+                            compiled to-do list encompassing their assigned work. While a student account can be added as a teacher to a class, it does not allow them to receive the same benefits as students, such as email notifications and
+                            the GC to-do list. What's the solution? To automate the teacher.
                         </p>
                         <h5>How does this app work?</h5>
-                        <p>This app synthesizes the user input into a JSON package.
-                            The app then sends the data to a server controlling the teacher's account.
-                            The teacher reads the data and forwards it to Google Classroom for the user to see.</p>
+                        <p>
+                            This app synthesizes the user input into a JSON package. The app then sends the data to a server controlling the teacher's account. The teacher reads the data and forwards it to Google Classroom for the user to
+                            see.
+                        </p>
                         <!-- end main content -->
                     </div>
                 </main>
@@ -89,9 +88,7 @@
                     <div class="container-fluid px-4">
                         <div class="d-flex align-items-center justify-content-between small">
                             <div class="text-muted">Copyright © Nick Troiano 2023</div>
-                            <div>
-                                <a href="https://mbs.net">MBS.NET</a> · <a href="https://github.com/CT-42210">Github</a>
-                            </div>
+                            <div><a href="https://mbs.net">MBS.NET</a> · <a href="https://github.com/CT-42210">Github</a></div>
                         </div>
                     </div>
                 </footer>
@@ -99,5 +96,5 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
         <script src="js/scripts.js"></script>
-</body>
+    </body>
 </html>

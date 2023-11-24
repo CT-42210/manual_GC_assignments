@@ -1,4 +1,4 @@
-const { exec, execFile} = require("child_process");
+const { exec, execFile } = require("child_process");
 const fs = require("fs");
 const nodeConsole = require("console");
 const { ipcRenderer, dialog } = require("electron");
@@ -20,7 +20,6 @@ const printBoth = (str) => {
     terminalConsole.log(`Javascript: ${str}`);
 };
 
-
 const userData = (c, callback) => {
     if (!fs.existsSync("login")) {
         console.log('The "login" file does not exist.');
@@ -34,7 +33,7 @@ const userData = (c, callback) => {
         }
 
         const lines = data.trim().split("\n");
-        printBoth(lines)
+        printBoth(lines);
 
         if (lines.length >= 2) {
             const userName = lines[0];
@@ -52,7 +51,6 @@ const userData = (c, callback) => {
         }
     });
 };
-
 
 const sendToProgram = (str) => {
     child.stdin.write(str);
@@ -108,8 +106,8 @@ function publish(event) {
     console.log("Due Date: " + dueDate);
 
     userData(1, (result) => {
-            userEmail = result;
-        });
+        userEmail = result;
+    });
 
     const data = [userEmail, assignmentTitle, assignmentDetails, dueDate];
     printBoth("attempting publish");
@@ -146,15 +144,15 @@ ipcRenderer.on("load-edit-page-reply", (event, data) => {
     for (let i = 0; i < dataArray.length; i++) {
         const option = document.createElement("option");
         option.value = dataArray[i][0]; // Use the assignment Id as the option value
-        option.text = (dataArray[i][1] + " - " + dataArray[i][0]); // Use the assignment title as the option text
+        option.text = dataArray[i][1] + " - " + dataArray[i][0]; // Use the assignment title as the option text
         dropdown.add(option);
     }
 });
 
 function getAssignment() {
     const assignmentID = document.getElementById("assignmentDropdown").value;
-    ipcRenderer.send("get-assignment", assignmentID)
-    console.log("sent to main")
+    ipcRenderer.send("get-assignment", assignmentID);
+    console.log("sent to main");
 }
 
 ipcRenderer.on("get-assignment-reply", (event, data) => {
@@ -167,11 +165,9 @@ ipcRenderer.on("get-assignment-reply", (event, data) => {
     if (titleElement && descriptionElement && dueDateElement) {
         titleElement.value = dataArray[1];
         descriptionElement.value = dataArray[2];
-        dueDateElement.value = dataArray[3]['year'] + "-" + dataArray[3]['month'] + "-" + dataArray[3]['day'];
+        dueDateElement.value = dataArray[3]["year"] + "-" + dataArray[3]["month"] + "-" + dataArray[3]["day"];
     }
 });
-
-
 
 function edit(event) {
     event.preventDefault();
@@ -189,11 +185,11 @@ function edit(event) {
     console.log("Assignment Title: " + assignmentTitle);
     console.log("Assignment Details: " + assignmentDetails);
     console.log("Due Date: " + dueDate);
-    console.log("assignment id: " + assignmentID)
+    console.log("assignment id: " + assignmentID);
 
     userData(1, (result) => {
-            userEmail = result;
-        });
+        userEmail = result;
+    });
 
     const data = [assignmentID, userEmail, assignmentTitle, assignmentDetails, dueDate];
     printBoth("attempting edit");
@@ -218,11 +214,11 @@ function Delete(event) {
 
     const assignmentID = document.getElementById("assignmentDropdown").value;
 
-    console.log("assignment id: " + assignmentID)
+    console.log("assignment id: " + assignmentID);
 
     userData(1, (result) => {
-            userEmail = result;
-        });
+        userEmail = result;
+    });
 
     const data = [assignmentID];
     ipcRenderer.send("delete", data);
@@ -295,7 +291,6 @@ function exportFile(event) {
     document.getElementById("dueDate").value = "";
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const loginButton = document.getElementById("login");
     if (loginButton) {
@@ -321,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (deleteButton) {
         deleteButton.addEventListener("click", Delete);
     }
-
 
     const assignmentDropdown = document.getElementById("assignmentDropdown");
     if (assignmentDropdown) {
